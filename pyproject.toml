@@ -1,7 +1,7 @@
 [project]
 name = "pmm-mcp"
-version = "0.2.0"
-description = "Read-only MCP server for Percona Monitoring and Management (PMM) 2.x: PromQL metrics and Query Analytics"
+version = "0.3.0"
+description = "MCP server (read-only by default) for Percona Monitoring and Management (PMM) 2.x and 3.x: PromQL metrics and Query Analytics"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
@@ -11,8 +11,15 @@ dependencies = ["mcp[cli]>=2", "httpx"]
 keywords = ["mcp", "pmm", "percona", "mysql", "mongodb", "postgresql", "monitoring"]
 
 [project.optional-dependencies]
-dev = ["pytest"]
+dev = ["pytest", "ruff"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
