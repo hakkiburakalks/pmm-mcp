@@ -109,7 +109,17 @@ claude mcp add pmm -- uv run --quiet --env-file ~/.config/mcp/pmm.env --director
 
 ## 🔧 Configuration
 
-Set these environment variables (see [`pmm.env.example`](pmm.env.example)):
+Create `~/.config/mcp/pmm.env` (the installers do this for you) with your own values; the ones below are fake:
+
+```bash
+PMM_URL=https://pmm.example.com
+PMM_TOKEN=glsa_EXAMPLEexampleEXAMPLEexample1234567890_abcdef12
+PMM_VERIFY=1
+# PMM_CA_BUNDLE=/etc/ssl/certs/my-company-ca.pem
+# PMM_ALLOW_WRITE=1   # off by default, see "Read-only or write?" below
+```
+
+Set these environment variables (see [`pmm.env.example`](pmm.env.example) for a commented template):
 
 | Variable | Required | Description |
 |---|---|---|
@@ -167,6 +177,10 @@ Set these environment variables (see [`pmm.env.example`](pmm.env.example)):
 | `pmm_dashboard_queries` | The PromQL/SQL behind each dashboard panel |
 | `pmm_annotations` | Deploy/maintenance markers to correlate with changes |
 | `pmm_deeplink` | PMM URL for QAN or a dashboard |
+
+### Read-only or write?
+
+**Read-only is the default and the recommended setup.** With just `PMM_URL` and a Viewer `PMM_TOKEN` the model can look at metrics, queries, alerts and dashboards but cannot change anything. To let it silence an alert during maintenance or add a deploy marker, you need all three of: an Editor/Admin token, `PMM_ALLOW_WRITE=1`, and your approval of each call. Creating alert rules is not supported.
 
 ### Write tools (opt-in)
 
@@ -231,7 +245,7 @@ uv run pytest
 
 ## 📝 Notes
 
-- Tested against PMM 2 (Grafana 9.2) and PMM 3 (Grafana 12.4) with the default datasource UIDs, using Viewer and Admin tokens, a monitored MySQL and the full set of tools.
+- Tested against PMM 2 (Grafana 9.2) and PMM 3 (Grafana 12.4) with the default datasource UIDs, using Viewer and Admin tokens, and QAN on MySQL, PostgreSQL (`pg_stat_statements`) and MongoDB (profiler). Not covered: alerts in firing state, ProxySQL/HAProxy.
 
 - PMM's `/v1` API rejects Viewer tokens, so everything goes through the Grafana datasource proxy.
 - The same queryid can appear in several services; group by service when aggregating.
