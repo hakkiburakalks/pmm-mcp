@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2
+
+### Changed
+- Documentation only: example env file with fake values, "Read-only or write?" section, SECURITY guidance for
+  write mode, tested databases (MySQL, PostgreSQL, MongoDB). Released so the PyPI page shows the current README.
+
 ## 0.3.1
 
 ### Changed
