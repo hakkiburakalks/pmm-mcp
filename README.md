@@ -3,14 +3,31 @@
 An MCP server for [Percona Monitoring and Management](https://www.percona.com/software/database-tools/percona-monitoring-and-management) (PMM 2.x). It gives Claude and other MCP clients **read-only** access to MySQL/MongoDB/PostgreSQL metrics (PromQL) and Query Analytics (slowest queries, query details, ClickHouse SQL).
 
 ## Requirements
-- macOS/Linux, Python 3.11+, [`uv`](https://docs.astral.sh/uv/)
+- Linux, macOS or Windows, Python 3.11+, [`uv`](https://docs.astral.sh/uv/)
 - Network access to your PMM server (VPN if needed)
 - A PMM Grafana token: Administration → Service accounts → role Viewer → Add token
 
 ## Installation
-    git clone <this repository> && cd pmm-mcp && ./install.sh
+Linux / macOS:
 
-The installer asks for your PMM URL and token, writes them to `~/.config/mcp/pmm.env` (mode 600) and registers the server with Claude Code under the name `pmm`.
+    git clone https://github.com/hakkiburakalks/pmm-mcp && cd pmm-mcp && ./install.sh
+
+Windows (PowerShell):
+
+    git clone https://github.com/hakkiburakalks/pmm-mcp; cd pmm-mcp; powershell -ExecutionPolicy Bypass -File .\install.ps1
+
+The installer asks for your PMM URL and token, stores them in `~/.config/mcp/pmm.env` (owner-only access) and registers the server with Claude Code under the name `pmm`. If `claude` is not installed it prints the JSON snippet for Claude Desktop instead.
+
+### Manual setup (any MCP client)
+The server is a plain stdio MCP server. Run it with:
+
+    uv run --env-file /path/to/pmm.env --directory /path/to/pmm-mcp server.py
+
+and register that command in your client, for example in `claude_desktop_config.json`:
+
+    {"mcpServers": {"pmm": {"command": "uv", "args": ["run", "--quiet", "--env-file", "C:\Users\you\.config\mcp\pmm.env", "--directory", "C:\path\to\pmm-mcp", "server.py"]}}}
+
+Use the full path to `uv` as `command` if your client does not inherit your `PATH`.
 
 ## Configuration
 Environment variables (see `pmm.env.example`):
