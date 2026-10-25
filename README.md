@@ -25,7 +25,7 @@ The server is a plain stdio MCP server. Run it with:
 
 and register that command in your client, for example in `claude_desktop_config.json`:
 
-    {"mcpServers": {"pmm": {"command": "uv", "args": ["run", "--quiet", "--env-file", "C:\Users\you\.config\mcp\pmm.env", "--directory", "C:\path\to\pmm-mcp", "server.py"]}}}
+    {"mcpServers": {"pmm": {"command": "uv", "args": ["run", "--quiet", "--env-file", "C:\\Users\\you\\.config\\mcp\\pmm.env", "--directory", "C:\\path\\to\\pmm-mcp", "server.py"]}}}
 
 Use the full path to `uv` as `command` if your client does not inherit your `PATH`.
 
