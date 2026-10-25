@@ -6,7 +6,9 @@ SRC="$(cd "$(dirname "$0")" && pwd)"
 command -v uv >/dev/null || { echo "uv not found: install it from https://docs.astral.sh/uv/" >&2; exit 1; }
 
 mkdir -p "$HOME/mcp/pmm" "$HOME/.config/mcp" "$HOME/.local/bin"
-cp "$SRC/server.py" "$SRC/pyproject.toml" "$SRC/uv.lock" "$HOME/mcp/pmm/"
+rm -rf "$HOME/mcp/pmm/pmm_mcp"
+cp -r "$SRC/pmm_mcp" "$HOME/mcp/pmm/"
+cp "$SRC/server.py" "$SRC/pyproject.toml" "$SRC/uv.lock" "$SRC/README.md" "$SRC/LICENSE" "$HOME/mcp/pmm/"
 
 ENV="$HOME/.config/mcp/pmm.env"
 if [ ! -f "$ENV" ]; then

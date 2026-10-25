@@ -1,6 +1,6 @@
 import pytest
 
-import server
+from pmm_mcp import server
 
 
 @pytest.mark.parametrize("sql", [

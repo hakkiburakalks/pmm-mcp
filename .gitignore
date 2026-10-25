@@ -6,3 +6,5 @@ __pycache__/
 !pmm.env.example
 .claude-flow/
 .serena/
+dist/
+*.egg-info/

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1
+
+### Changed
+- Code moved into the `pmm_mcp` package and published to PyPI: `uvx pmm-mcp` or `pip install pmm-mcp`.
+  `server.py` stays as a compatibility shim, so `uv run server.py` and existing client configs keep working.
+- Tag-triggered PyPI publishing via GitHub Actions (Trusted Publishing).
+
 ## 0.3.0
 
 ### Added

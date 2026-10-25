@@ -11,7 +11,8 @@ $Dest = Join-Path $env:USERPROFILE 'mcp\pmm'
 $EnvDir = Join-Path $env:USERPROFILE '.config\mcp'
 $EnvFile = Join-Path $EnvDir 'pmm.env'
 New-Item -ItemType Directory -Force -Path $Dest, $EnvDir | Out-Null
-foreach ($f in 'server.py', 'pyproject.toml', 'uv.lock') { Copy-Item (Join-Path $Src $f) $Dest -Force }
+foreach ($f in 'server.py', 'pyproject.toml', 'uv.lock', 'README.md', 'LICENSE') { Copy-Item (Join-Path $Src $f) $Dest -Force }
+Copy-Item (Join-Path $Src 'pmm_mcp') $Dest -Recurse -Force
 
 if (-not (Test-Path $EnvFile)) {
     $url = $env:PMM_URL

@@ -1,6 +1,10 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "pmm-mcp"
-version = "0.3.0"
+version = "0.3.1"
 description = "MCP server (read-only by default) for Percona Monitoring and Management (PMM) 2.x and 3.x: PromQL metrics and Query Analytics"
 readme = "README.md"
 license = "MIT"
@@ -10,8 +14,22 @@ requires-python = ">=3.11"
 dependencies = ["mcp[cli]>=2", "httpx"]
 keywords = ["mcp", "pmm", "percona", "mysql", "mongodb", "postgresql", "monitoring"]
 
+[project.urls]
+Homepage = "https://github.com/hakkiburakalks/pmm-mcp"
+Issues = "https://github.com/hakkiburakalks/pmm-mcp/issues"
+Changelog = "https://github.com/hakkiburakalks/pmm-mcp/blob/main/CHANGELOG.md"
+
+[project.scripts]
+pmm-mcp = "pmm_mcp.server:main"
+
 [project.optional-dependencies]
 dev = ["pytest", "ruff"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["pmm_mcp"]
+
+[tool.hatch.build.targets.sdist]
+include = ["pmm_mcp", "tests", "README.md", "LICENSE", "CHANGELOG.md", "SECURITY.md", "server.py", "pmm.env.example"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -6,7 +6,7 @@ import sys
 import httpx
 import pytest
 
-import server
+from pmm_mcp import server
 
 
 @pytest.fixture
@@ -125,7 +125,7 @@ def test_deeplink(pmm):
 @pytest.mark.parametrize("flag, expected", [("0", False), ("1", True)])
 def test_write_tools_registered_only_when_enabled(flag, expected):
     code = (
-        "import asyncio, server;"
+        "import asyncio; from pmm_mcp import server;"
         "print(sorted(t.name for t in asyncio.run(server.mcp.list_tools()) if t.name == 'pmm_create_silence'))"
     )
     out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True,
