@@ -1,0 +1,18 @@
+[project]
+name = "pmm-mcp"
+version = "0.2.0"
+description = "Read-only MCP server for Percona Monitoring and Management (PMM) 2.x: PromQL metrics and Query Analytics"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Burak Alkis" }]
+requires-python = ">=3.11"
+dependencies = ["mcp[cli]>=2", "httpx"]
+keywords = ["mcp", "pmm", "percona", "mysql", "mongodb", "postgresql", "monitoring"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
