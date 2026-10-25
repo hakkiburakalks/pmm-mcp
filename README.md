@@ -25,13 +25,25 @@ A community-maintained [Model Context Protocol](https://modelcontextprotocol.io/
 - Network access to your PMM server (VPN if needed)
 - A PMM Grafana token: *Administration → Service accounts → role Viewer → Add token*
 
-**Linux / macOS**
+**With `uvx` (no clone needed)**
+
+```bash
+uvx pmm-mcp
+```
+
+Put `PMM_URL` and `PMM_TOKEN` in the environment (or an env file, see [Configuration](#-configuration)). To register it with Claude Code:
+
+```bash
+claude mcp add pmm -- uvx --env-file ~/.config/mcp/pmm.env pmm-mcp
+```
+
+**Linux / macOS (installer)**
 
 ```bash
 git clone https://github.com/hakkiburakalks/pmm-mcp && cd pmm-mcp && ./install.sh
 ```
 
-**Windows (PowerShell)**
+**Windows (PowerShell installer)**
 
 ```powershell
 git clone https://github.com/hakkiburakalks/pmm-mcp; cd pmm-mcp; powershell -ExecutionPolicy Bypass -File .\install.ps1
@@ -46,10 +58,10 @@ The installer asks for your PMM URL and token, stores them in `~/.config/mcp/pmm
 The server is a plain stdio MCP server. Run it with:
 
 ```bash
-uv run --env-file /path/to/pmm.env --directory /path/to/pmm-mcp server.py
+uv run --env-file /path/to/pmm.env --directory /path/to/pmm-mcp pmm-mcp
 ```
 
-and register that command in your client, for example in `claude_desktop_config.json`:
+(`server.py` still works as an alias for existing setups) and register that command in your client, for example in `claude_desktop_config.json`:
 
 ```json
 {
