@@ -4,13 +4,13 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![MCP](https://img.shields.io/badge/MCP-stdio-green.svg)](https://modelcontextprotocol.io/)
 
-A community-maintained [Model Context Protocol](https://modelcontextprotocol.io/) server for [Percona Monitoring and Management](https://www.percona.com/software/database-tools/percona-monitoring-and-management) (PMM 2.x). It gives Claude and other MCP clients **read-only** access to MySQL, MongoDB and PostgreSQL metrics (PromQL) and Query Analytics (slowest queries, query details, ClickHouse SQL).
+A community-maintained [Model Context Protocol](https://modelcontextprotocol.io/) server for [Percona Monitoring and Management](https://www.percona.com/software/database-tools/percona-monitoring-and-management) (PMM 2.x and 3.x). It gives Claude and other MCP clients **read-only** access to MySQL, MongoDB and PostgreSQL metrics (PromQL) and Query Analytics (slowest queries, query details, ClickHouse SQL).
 
 > This is not an official Percona or Anthropic product.
 
 ## ✨ Features
 
-- **Read-only by design**: works with a Grafana *Viewer* token; the server never writes to PMM
+- **Read-only by default**: works with a Grafana *Viewer* token. Optional write tools (silences, annotations) are off unless `PMM_ALLOW_WRITE=1` and always dry-run first
 - **Metrics**: instant and range PromQL queries plus label discovery
 - **Query Analytics (QAN)**: top queries, per-service load, single-query details and distribution over time
 - **Safe SQL**: free-form `SELECT` against QAN's ClickHouse, strictly validated and capped
@@ -102,7 +102,8 @@ Set these environment variables (see [`pmm.env.example`](pmm.env.example)):
 | Variable | Required | Description |
 |---|---|---|
 | `PMM_URL` | ✅ | PMM server URL |
-| `PMM_TOKEN` | ✅ | Grafana service-account token, Viewer role |
+| `PMM_TOKEN` | ✅ | Grafana service-account token. Viewer is enough for all read tools; the write tools need Editor or Admin |
+| `PMM_ALLOW_WRITE` | | Default `0`. Set `1` to register the opt-in write tools (see below) |
 | `PMM_VERIFY` | | TLS verification, default `1`. Use `0` only for self-signed certificates |
 | `PMM_CA_BUNDLE` | | Path to a custom CA bundle (preferred over disabling verification) |
 | `PMM_TIMEOUT` | | HTTP timeout in seconds, default `60` |
@@ -116,14 +117,24 @@ Set these environment variables (see [`pmm.env.example`](pmm.env.example)):
 | Tool | Description |
 |---|---|
 | `pmm_list_services` | Monitored databases and their status |
+| `pmm_whoami` | Identity and role behind the configured token |
+
+### Alerting
+
+| Tool | Description |
+|---|---|
+| `pmm_list_alerts` | Currently firing alerts, optionally filtered by label |
+| `pmm_alert_rules` | Alert rules and their state |
+| `pmm_list_silences` | Active silences |
 
 ### Query Analytics
 
 | Tool | Description |
 |---|---|
 | `pmm_qan_by_service` | How much query time each database spends |
-| `pmm_qan_top_queries` | Heaviest queries |
+| `pmm_qan_top_queries` | Heaviest queries, filterable by service, database, node, user, client host or text |
 | `pmm_qan_query_detail` | A single query's example and its distribution over time |
+| `pmm_qan_schema` | Actual columns of `pmm.metrics` on your PMM version |
 | `pmm_qan_sql` | Free-form, validated `SELECT` against QAN ClickHouse |
 
 ### Metrics
@@ -131,8 +142,31 @@ Set these environment variables (see [`pmm.env.example`](pmm.env.example)):
 | Tool | Description |
 |---|---|
 | `pmm_promql` | Instant PromQL query |
-| `pmm_promql_range` | Range PromQL query |
-| `pmm_label_values` | List values of a metric label |
+| `pmm_promql_range` | Range PromQL query (point and series caps) |
+| `pmm_metric_names` | Find metric names by substring |
+| `pmm_metric_metadata` | Help text and type of a metric |
+| `pmm_label_names` / `pmm_label_values` | Discover labels and their values |
+
+### Dashboards and context
+
+| Tool | Description |
+|---|---|
+| `pmm_search_dashboards` | Find PMM dashboards |
+| `pmm_dashboard_queries` | The PromQL/SQL behind each dashboard panel |
+| `pmm_annotations` | Deploy/maintenance markers to correlate with changes |
+| `pmm_deeplink` | PMM URL for QAN or a dashboard |
+
+### Write tools (opt-in)
+
+Registered only when `PMM_ALLOW_WRITE=1` **and** the token has Editor/Admin rights. Without the flag the model does not even see them.
+
+| Tool | Description |
+|---|---|
+| `pmm_create_silence` | Silence alerts matching exact labels, max 72 h, comment required |
+| `pmm_delete_silence` | Expire a silence |
+| `pmm_add_annotation` | Add a deploy/maintenance marker |
+
+Every write tool is a **dry run by default**: it returns exactly what it would do and changes nothing until it is called again with `confirm=true`. The tools are also annotated as non-read-only, so MCP clients ask for approval. The model is instructed to confirm with you first, so keep your client's per-tool approval on for these.
 
 ## 💬 Example Queries
 
@@ -150,7 +184,7 @@ Set these environment variables (see [`pmm.env.example`](pmm.env.example)):
 
 ## 🔒 Security
 
-- Use a **Viewer** token; the server never writes to PMM.
+- Use a **Viewer** token unless you need the write tools; by default the server never writes to PMM. Writes require `PMM_ALLOW_WRITE=1`, an Editor/Admin token and `confirm=true` on each call.
 - TLS certificates are verified by default.
 - `pmm_qan_sql` accepts only a single plain `SELECT`/`WITH`. Comments, quoted identifiers, `SETTINGS`/`FORMAT`/`INTO`, table functions (`url`, `file`, `remote`, ...) and system tables are rejected. Row counts and time windows are capped.
 - Tool inputs (labels, service types, limits, time windows) are validated before being used in a query.
@@ -184,6 +218,8 @@ uv run pytest
 ```
 
 ## 📝 Notes
+
+- Tested against PMM 2 (Grafana 9.2) and PMM 3 (Grafana 12.4) with the default datasource UIDs, using Viewer and Admin tokens, a monitored MySQL and the full set of tools.
 
 - PMM's `/v1` API rejects Viewer tokens, so everything goes through the Grafana datasource proxy.
 - The same queryid can appear in several services; group by service when aggregating.
