@@ -4,7 +4,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![MCP](https://img.shields.io/badge/MCP-stdio-green.svg)](https://modelcontextprotocol.io/)
 
-A community-maintained [Model Context Protocol](https://modelcontextprotocol.io/) server for [Percona Monitoring and Management](https://www.percona.com/software/database-tools/percona-monitoring-and-management) (PMM 2.x and 3.x). It gives Claude and other MCP clients **read-only** access to MySQL, MongoDB and PostgreSQL metrics (PromQL) and Query Analytics (slowest queries, query details, ClickHouse SQL).
+A community-maintained [Model Context Protocol](https://modelcontextprotocol.io/) server for [Percona Monitoring and Management](https://www.percona.com/software/database-tools/percona-monitoring-and-management) (PMM 2.x and 3.x). It gives Claude and other MCP clients access to MySQL, MongoDB and PostgreSQL metrics (PromQL), Query Analytics (slowest queries, query details, ClickHouse SQL), alerts and PMM dashboards. It is **read-only by default**; a few write tools (silences, annotations) can be enabled explicitly, see [Read-only or write?](#read-only-or-write).
 
 > This is not an official Percona or Anthropic product.
 
@@ -246,8 +246,7 @@ uv run pytest
 ## 📝 Notes
 
 - Tested against PMM 2 (Grafana 9.2) and PMM 3 (Grafana 12.4) with the default datasource UIDs, using Viewer and Admin tokens, and QAN on MySQL, PostgreSQL (`pg_stat_statements`) and MongoDB (profiler). Not covered: alerts in firing state, ProxySQL/HAProxy.
-
-- PMM's `/v1` API rejects Viewer tokens, so everything goes through the Grafana datasource proxy.
+- PMM's `/v1` API rejects Viewer tokens (observed on PMM 2; PMM 3 was not checked for this), so everything goes through the Grafana datasource proxy.
 - The same queryid can appear in several services; group by service when aggregating.
 - In MySQL QAN the `max_ms`/`p99` fields are 0 (a perfschema limitation).
 
