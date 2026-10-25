@@ -69,6 +69,26 @@ and register that command in your client, for example in `claude_desktop_config.
 
 Use the full path to `uv` as `command` if your client does not inherit your `PATH`.
 
+On macOS the config file is `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "pmm": {
+      "command": "/opt/homebrew/bin/uv",
+      "args": [
+        "run", "--quiet",
+        "--env-file", "/Users/you/.config/mcp/pmm.env",
+        "--directory", "/Users/you/pmm-mcp",
+        "server.py"
+      ]
+    }
+  }
+}
+```
+
+Desktop apps don't inherit your shell `PATH`, so give the full path to `uv` (check with `which uv`; typically `/opt/homebrew/bin/uv` on Apple Silicon, `/usr/local/bin/uv` on Intel, `~/.local/bin/uv` expanded to an absolute path if installed via the curl script). `install.sh` prints this snippet for you.
+
 ### Claude Code
 
 ```bash
